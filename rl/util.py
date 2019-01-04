@@ -1,8 +1,8 @@
 from threading import Lock
-from rl.action import Action
 lock = Lock()
 
 class Util:
+    from rl.action import Action
     num_episodes = 10
     num_rows = 8
     num_cols = 8
@@ -28,6 +28,7 @@ class Util:
         
     @staticmethod
     def get_state_actions():
+        from rl.action import Action
         with lock:
             if Util.state_actions is not None:
                 return Util.state_actions
@@ -68,26 +69,37 @@ class Util:
     
     @staticmethod
     def create_initial_q(num_rows, num_cols):
-        pass
-'''    public static QEntry[][] createInitialQ(int numRows, int numCols) {
-        int numStates = numRows * numCols;
-        QEntry[][] q = new QEntry[numStates][actions.length];
-        for (int i = 0; i < numStates; i++) {
-            for (int j = 0; j < actions.length; j++) {
-                q[i][j] = new QEntry();
-            }
-        }
-        int[][] stateActions = getStateActions();
-        // set q[state][disallowedAction] to -Double.MAX_VALUE and q[state][allowedAction] to 0
-        for (int state = 0; state < numStates; state++) {
-            for (int i = 0; i < actions.length; i++) {
-                q[state][i].value = -Double.MAX_VALUE;
-            }
-            int[] actions = stateActions[state];
-            for (int a : actions) {
-                q[state][a].value = 0;
-            }
-        }
-        return q;
-    }
-''' 
+        from rl.qentry import QEntry
+        num_states = num_rows * num_cols
+        q = [[QEntry(Util.MIN_VALUE) for _ in range(len(Util.actions))] for _ in range(num_states)]
+        state_actions = Util.get_state_actions()
+        # set q[state][disallowedAction] to -Double.MAX_VALUE and q[state][allowedAction] to 0
+        for state in range(num_states):
+            actions = state_actions[state]
+            for a in actions:
+                q[state][a].value = 0
+        return q
+    
+    @staticmethod
+    def policy_found(q, steps):
+        from rl.environment import Environment
+        from rl.agent import Agent
+        from rl.stateaction import StateAction
+        environment = Environment()
+        agent = Agent(environment, Util.get_state_actions, q, 1, 1)
+        maxStepsAllowed = Util.num_cols + Util.num_rows
+        
+        stepsToGoal = 0
+        while stepsToGoal < maxStepsAllowed:
+            stepsToGoal += 1
+            prevState = agent.get_state()
+            agent.test();
+            action = agent.get_action()
+            if prevState != Util.MIN_VALUE:
+                steps.append(StateAction(prevState, action));
+            
+            if agent.get_state() == Util.get_goal_state():
+                return True
+            if agent.terminal:
+                return False
+        return agent.get_state() == Util.get_goal_state()

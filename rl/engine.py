@@ -6,7 +6,7 @@ class Engine():
     
     def __init__(self):
         self.state_actions = Util.get_state_actions()
-        self.q = Util.create_initial_q(Util.numRows,  Util.numCols)
+        self.q = Util.create_initial_q(Util.num_rows,  Util.num_cols)
 
         
     def run(self):
@@ -23,9 +23,16 @@ class Engine():
                 #fireTickEvent(new TickEvent(agent, prevState, state));
                 if agent.terminal or count == Util.MAX_TICKS:
                     break
-            #fireAfterEpisodeEvent(agent, episode);
+            steps = []
+            if Util.policy_found(self.q, steps):
+                self.print_steps(episode, steps)
+                break
 
-            print(episode)
-
+    def print_steps(self, episode, steps):
+        print('Policy found by single agent at episode ', episode)
+        for step in steps:
+            print('(', step.state, step.action, '), ')
+        print("(", Util.get_goal_state(), ")");
+        
     def create_agent(self, environment, episode, num_episodes):
-        return Agent(environment, self.state_actions, self.q, episode, num_episodes)
+        return Agent(environment, Util.get_state_actions(), self.q, episode, num_episodes)

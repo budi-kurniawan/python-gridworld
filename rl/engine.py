@@ -31,8 +31,8 @@ class Engine():
     def print_steps(self, episode, steps):
         print('Policy found by single agent at episode ', episode)
         for step in steps:
-            print('(', step.state, step.action, '), ')
-        print("(", Util.get_goal_state(), ")");
+            print('(' + str(step.state), str(step.action) + '), ', end="")
+        print("(" + str(Util.get_goal_state()) + ")");
         
     def create_agent(self, environment, episode, num_episodes):
         return Agent(environment, Util.get_state_actions(), self.q, episode, num_episodes)

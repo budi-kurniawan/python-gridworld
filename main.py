@@ -7,13 +7,13 @@ def test_single_agent():
 
 
 if __name__ == '__main__':
-    import rl
     from rl.util import Util
     start = time()
-    Util.num_cols = 8
-    Util.num_rows = 8
-    Util.num_episodes = 2000
-    test_single_agent()
+    Util.num_cols = 50
+    Util.num_rows = 50
+    Util.num_episodes = 15000
+    for i in range(5):
+        test_single_agent()
 
 #     sa = Util.get_state_actions()
 #     print(sa[1])
@@ -23,5 +23,6 @@ if __name__ == '__main__':
 
     end = time()
     print('Execution time:', end - start, 'seconds')
+    print('Average time:', (end - start)/5, 'seconds')
     
     
